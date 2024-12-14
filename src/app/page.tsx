@@ -1,25 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Memecoin, Prediction } from '@/types';
-import MemecoinPredictionCard from '@/components/MemecoinPredictionCard';
+import { Prediction, Cryptocurrency } from '@/types';
+import CryptoPredictionCard from '@/components/CryptoPredictionCard';
 
 export default function Home() {
-  const [memecoins, setMemecoins] = useState<Memecoin[]>([]);
+  const [Cryptocurrencies, setCryptocurrencies] = useState<Cryptocurrency[]>([]);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchMemecoins = async () => {
+    const fetchCryptocurrencies = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/api/memecoins');
+        const response = await fetch('/api/cryptocurrencies');
         if (!response.ok) {
           throw new Error('Failed to fetch memecoins');
         }
         const data = await response.json();
-        setMemecoins(data);
+        setCryptocurrencies(data);
       } catch (err) {
         console.log(err);
         setError('Failed to load memecoins. Please try again later.');
@@ -28,7 +28,7 @@ export default function Home() {
       }
     };
 
-    fetchMemecoins();
+    fetchCryptocurrencies();
   }, []);
 
   useEffect(() => {
@@ -37,6 +37,11 @@ export default function Home() {
       setPredictions(JSON.parse(storedPredictions));
     }
   }, []);
+
+  const handleSubmit = () => {
+    console.log("handle submit");
+    return;
+  }
 
   const handlePrediction = (prediction: Prediction) => {
     const newPredictions = [...predictions.filter(p => p.id !== prediction.id), prediction];
@@ -54,17 +59,18 @@ export default function Home() {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Memecoin Prediction Game</h1>
-      <p className="text-center mb-8">Predict whether each memecoin &apos s price will go up or down in the next 24 hours!</p>
+      <h1 className="text-3xl font-bold mb-8 text-center">Cryptocurrency Prediction Game</h1>
+      <p className="text-center mb-8">Predict whether each cryptocurrency &apos s price will go up or down in the next 24 hours!</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {memecoins.map((memecoin) => (
-          <MemecoinPredictionCard
-            key={memecoin.id}
-            memecoin={memecoin}
+        {Cryptocurrencies.map((Cryptocurrency) => (
+          <CryptoPredictionCard
+            key={Cryptocurrency.id}
+            crypto={Cryptocurrency}
             onPrediction={handlePrediction}
           />
         ))}
       </div>
+      <button className={'px-4 py-2 rounded bg-white'} onClick={handleSubmit}>Submit</button>
     </main>
   );
 }
