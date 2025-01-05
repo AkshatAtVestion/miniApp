@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react';
 import { Prediction, Cryptocurrency } from '@/types';
 import CryptoPredictionCard from '@/components/CryptoPredictionCard';
+import { connectDb } from '../dbConfig/dbConfig';
 
 export default function Home() {
   const [Cryptocurrencies, setCryptocurrencies] = useState<Cryptocurrency[]>([]);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     const fetchCryptocurrencies = async () => {
       try {
@@ -30,6 +30,39 @@ export default function Home() {
 
     fetchCryptocurrencies();
   }, []);
+
+  useEffect(() => {
+    connectDb()
+  }, []);
+
+  useEffect(() => {
+    const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe || ""; // unsafe
+    if (initDataUnsafe && initDataUnsafe.user) {
+      const { id, username } = initDataUnsafe.user;
+
+      const payLoad = {
+        id,
+        username,
+      };
+      console.log("Payload", payLoad);
+      fetch('/api/createUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payLoad),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    } else {
+      console.log("No user data found");
+    }
+  }, [])
 
   useEffect(() => {
     const storedPredictions = localStorage.getItem('memecoin_predictions');

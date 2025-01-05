@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Cryptocurrency, Prediction } from '@/types';
-
+import { initTelegramWebApp } from '@/lib/telegram/client';
 interface Props {
   crypto: Cryptocurrency;
   onPrediction: (prediction: Prediction) => void;
@@ -14,6 +14,8 @@ export default function CryptoPredictionCard({ crypto, onPrediction }: Props) {
     setPrediction(value);
     onPrediction({ id: crypto.id, prediction: value });
   };
+
+
 
   return (
     <div className="border rounded-lg p-4 flex flex-col items-center space-y-2 bg-white">
