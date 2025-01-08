@@ -11,8 +11,9 @@ export default function CryptoPredictionCard({ crypto, onPrediction }: Props) {
   const [prediction, setPrediction] = useState<'up' | 'down' | null>(null);
 
   const handlePrediction = (value: 'up' | 'down') => {
+    const isUp = value === 'up';
     setPrediction(value);
-    onPrediction({ id: crypto.id, prediction: value });
+    onPrediction({ id: crypto.id, prediction: isUp });
   };
 
 

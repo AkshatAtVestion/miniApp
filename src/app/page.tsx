@@ -71,9 +71,44 @@ export default function Home() {
     }
   }, []);
 
-  const handleSubmit = () => {
-    console.log("handle submit");
-    return;
+  const handleSubmit = async () => {
+    console.log("submitting predictions...");
+
+    try {
+      const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe || ""; // User data from Telegram WebApp
+      if (!initDataUnsafe || !initDataUnsafe.user) {
+        console.error("User data not found");
+        return;
+      }
+
+      const { id, username } = initDataUnsafe.user;
+
+      const payLoad = {
+        id,
+        username,
+        predictions: predictions.reduce((acc: any, curr: any) => {
+          acc[curr.CryptoName] = curr.prediction;
+          return acc;
+        }, {}),
+      };
+
+      const response = await fetch('/api/predictions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payLoad),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to submit predictions');
+      }
+
+      const data = await response.json();
+      console.log('Success:', data);
+    } catch (error: any) {
+      console.error('Error submitting predictions:', error.message);
+    }
   }
 
   const handlePrediction = (prediction: Prediction) => {

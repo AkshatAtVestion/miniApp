@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDb } from "../../../dbConfig/dbConfig";
 import Cryptocurrency from "../../../models/cryptocurrency";
-
+// this gets the data of cryptocurrencies after every 24 hours to check the price change and updates the database accoddingly
 export async function POST() {
     try {
         const response = await fetch('http://localhost:3000/api/cryptocurrencies');

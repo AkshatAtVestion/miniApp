@@ -1,6 +1,6 @@
 export interface Prediction {
   id: string;
-  prediction: 'up' | 'down';
+  prediction: boolean | null;
 }
 
 export interface Cryptocurrency {
