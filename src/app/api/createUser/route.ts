@@ -1,20 +1,16 @@
-import User from '../../../models/user';
-import { connectDb } from '../../../dbConfig/dbConfig';
-import { NextApiRequest, NextApiResponse } from 'next';
+import User from '@/models/user';
+import { connectDb } from '@/dbConfig/dbConfig';
+import { NextResponse } from 'next/server';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== "POST") {
-        res.setHeader("Allow", ["POST"]);
-        return res.status(405).json({ error: `Method ${req.method} not allowed` });
-    }
-
-    const { id, username } = req.body;
-
-    if (!id || !username) {
-        return res.status(400).json({ error: "Missing required fields" });
-    }
-
+export async function POST(req: Request) {
     try {
+        const body = await req.json(); // Parse the request body
+        const { id, username } = body;
+
+        if (!id || !username) {
+            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        }
+
         await connectDb();
 
         // Check if the user already exists
@@ -25,9 +21,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             await user.save();
         }
 
-        return res.status(200).json({ message: "User created or already exists", user });
+        return NextResponse.json({ message: "User created or already exists", user });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

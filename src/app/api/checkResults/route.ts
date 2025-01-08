@@ -37,8 +37,15 @@ export async function POST() {
         }
 
         return NextResponse.json({ message: 'Cryptos stored successfully' });
-    } catch (error: any) {
-        console.error('Error updating cryptos:', error.message);
-        return NextResponse.json({ error: 'Failed to update cryptocurrencies' }, { status: 500 });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Error checking results:', error.message);
+            return NextResponse.json({ error: 'Failed to check the results' }, { status: 500 });
+        }
+
+        // Fallback for unexpected error shapes
+        console.error('Unexpected error:', error);
+        return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
     }
+
 }

@@ -86,11 +86,12 @@ export default function Home() {
       const payLoad = {
         id,
         username,
-        predictions: predictions.reduce((acc: any, curr: any) => {
-          acc[curr.CryptoName] = curr.prediction;
+        predictions: predictions.reduce<Record<string, boolean | null>>((acc, curr) => {
+          acc[curr.id] = curr.prediction;
           return acc;
         }, {}),
       };
+
 
       const response = await fetch('/api/predictions', {
         method: 'POST',
@@ -106,9 +107,14 @@ export default function Home() {
 
       const data = await response.json();
       console.log('Success:', data);
-    } catch (error: any) {
-      console.error('Error submitting predictions:', error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error submitting predictions:', error.message);
+      } else {
+        console.error('An unknown error occurred:', error);
+      }
     }
+
   }
 
   const handlePrediction = (prediction: Prediction) => {

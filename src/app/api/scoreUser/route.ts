@@ -45,9 +45,16 @@ export async function POST() {
             message: "User scores updated successfully",
             totalUsers: users.length,
         });
-    } catch (error: any) {
-        console.error("Error comparing predictions and updating scores:", error.message);
-        return NextResponse.json({ error: "Failed to update user scores" }, { status: 500 });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Error scoring user:', error.message);
+            return NextResponse.json({ error: 'Failed to score the user' }, { status: 500 });
+        }
+
+        // Fallback for unexpected error shapes
+        console.error('Unexpected error:', error);
+        return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
     }
+
 }
 

@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Cryptocurrency, Prediction } from '@/types';
-import { initTelegramWebApp } from '@/lib/telegram/client';
+//import { initTelegramWebApp } from '@/lib/telegram/client';
 interface Props {
   crypto: Cryptocurrency;
   onPrediction: (prediction: Prediction) => void;

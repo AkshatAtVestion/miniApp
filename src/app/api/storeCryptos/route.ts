@@ -29,14 +29,23 @@ export async function POST() {
         const savedCryptos = await Cryptocurrency.insertMany(cryptoDataToStore, { ordered: false });
 
         return NextResponse.json({ message: 'Cryptos stored successfully', data: savedCryptos });
-    } catch (error: any) {
-        console.error('Error storing cryptos:', error.message);
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Error storing cryptos:', error.message);
 
-        if (error.code === 11000) {
-            return NextResponse.json({ warning: 'Some cryptos were already stored' }, { status: 200 });
+            // Check for specific error codes (like duplicate key error in MongoDB)
+            const errorWithCode = error as { code?: number }; // Type assertion for custom properties
+            if (errorWithCode.code === 11000) {
+                return NextResponse.json({ warning: 'Some cryptos were already stored' }, { status: 200 });
+            }
+
+            return NextResponse.json({ error: 'Failed to store cryptocurrencies' }, { status: 500 });
         }
 
-        return NextResponse.json({ error: 'Failed to store cryptocurrencies' }, { status: 500 });
+        // Fallback for unexpected error shapes
+        console.error('Unexpected error:', error);
+        return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
     }
+
 
 }

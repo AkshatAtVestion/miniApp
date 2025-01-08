@@ -18,8 +18,16 @@ export async function POST(req: NextRequest) {
         )
 
         return NextResponse.json({ message: "User predictions updated successfully", user });
-    } catch (error: any) {
-        console.error("Error updating user predictions:", error.message);
-        return NextResponse.json({ error: "Failed to update user predictions" }, { status: 500 });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Error getting user predictions:', error.message);
+            return NextResponse.json({ error: 'Failed to get the user predictions' }, { status: 500 });
+        }
+
+        // Fallback for unexpected error shapes
+        console.error('Unexpected error:', error);
+        return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
     }
+
+
 }
