@@ -12,15 +12,14 @@ export async function POST(req: Request) {
         }
 
         await connectDb();
-
         // Check if the user already exists
         let user = await User.findOne({ id });
-
+        console.log("User", user);
         if (!user) {
             user = new User({ id, username, predictions: {} });
             await user.save();
         }
-
+        console.log("User created or already exists", user);
         return NextResponse.json({ message: "User created or already exists", user });
     } catch (error) {
         console.error(error);

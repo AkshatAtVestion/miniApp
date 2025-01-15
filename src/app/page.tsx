@@ -3,13 +3,24 @@
 import { useState, useEffect } from 'react';
 import { Prediction, Cryptocurrency } from '@/types';
 import CryptoPredictionCard from '@/components/CryptoPredictionCard';
-import { connectDb } from '../dbConfig/dbConfig';
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [Cryptocurrencies, setCryptocurrencies] = useState<Cryptocurrency[]>([]);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/login');
+    }
+  }, [user, router]);
+
   useEffect(() => {
     const fetchCryptocurrencies = async () => {
       try {
@@ -31,9 +42,9 @@ export default function Home() {
     fetchCryptocurrencies();
   }, []);
 
-  useEffect(() => {
-    connectDb()
-  }, []);
+  // useEffect(() => {
+  //   connectDb()
+  // }, []);
 
   useEffect(() => {
     const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe || ""; // unsafe
